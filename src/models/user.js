@@ -29,6 +29,10 @@ const userSchema = mongoose.Schema(
         'Please enter a valid VIT Email ID',
       ]
     },
+    isEmailVerified:{
+      type: Boolean,
+      default: false
+    },
     phone: 
     {
         type: String,
@@ -62,7 +66,9 @@ const userSchema = mongoose.Schema(
   },
   responseTech:[{
     qid:String,
-    response:String
+    response:String,
+    projects:String,
+    brief:String
   }],
   responseManagement:[
 {
@@ -80,7 +86,7 @@ const userSchema = mongoose.Schema(
       validate: [
         function(v) {
           var re = /^https?:\/\/github.com\/[^\/]*\/?$/;
-          return (v == null) || re.test(v)
+          return re.test(v)
       },
         'Please enter a valid GitHub Link',
       ],
@@ -91,6 +97,10 @@ const userSchema = mongoose.Schema(
       validate: /^data:image\/[^;]+;base64[^"]+$/
     },*/
   techscore:{
+    type:Number,
+    default:0
+  },
+  designscore:{
     type:Number,
     default:0
   },

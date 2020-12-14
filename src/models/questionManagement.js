@@ -2,7 +2,10 @@ const mongoose = require("mongoose");
  
 const mQuestionSchema = new mongoose.Schema({
     description:String,
-    image:String
+    questionImage: {
+        type:String,
+        validate: /^data:image\/[^;]+;base64[^"]+$/
+      }
     // yearofstudy: {
     //     type: Number,
     //     required: [true, 'Please Specify which Year the questions are made for!']

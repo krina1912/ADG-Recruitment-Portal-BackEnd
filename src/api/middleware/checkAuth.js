@@ -4,7 +4,7 @@ require('dotenv/config')
 module.exports = (req,res,next) => {
   const token = req.header("auth-token")
   if(!token){
-    res.status(403).send({
+    res.status(401).send({
       message:"Auth Failed!"
     })
   }
@@ -12,6 +12,7 @@ module.exports = (req,res,next) => {
   try{
       const decoded = jwt.verify(token, process.env.JWT_KEY);
       req.user = decoded
+      console.log(decoded)
       next();
   }
   catch(error){

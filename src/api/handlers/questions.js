@@ -16,6 +16,7 @@ async function getAllManagementQuestionsFunction(req,res){
       
     } catch (err){
       res.status(500).send({
+        success: false,
         message:"Error"
       })
     }
@@ -33,6 +34,7 @@ async function getAllManagementQuestionsFunction(req,res){
      
     } catch (err){
       res.status(500).send({
+        success: false,
         message:"Error"
       })
     }
@@ -48,11 +50,10 @@ try{
     ...quizData
   });
   await tQuiz.save();
-  return res.status(200).send(tQuiz);
+  return res.status(201).send(tQuiz);
 } catch(err){
   res.status(500).send({
-    success: false,
-    message: err
+    message:"Error"
   })
 }
 };
@@ -62,15 +63,14 @@ async function createManagementQuestionFunction(req,res,next) {
     ...req.body
   };
   try{
-    const tQuiz = new mQuestion({
+    const mQuiz = new mQuestion({
       ...quizData
     });
-    await tQuiz.save();
-    return res.status(200).send(tQuiz);
+    await mQuiz.save();
+    return res.status(201).send(mQuiz);
   } catch(err){
     res.status(500).send({
-      success: false,
-      message: err
+      message:"Error"
     })
   }
   };
@@ -80,15 +80,14 @@ async function createManagementQuestionFunction(req,res,next) {
       ...req.body
     };
     try{
-      const tQuiz = new dQuestion({
+      const dQuiz = new dQuestion({
         ...quizData
       });
-      await tQuiz.save();
-      return res.status(200).send(tQuiz);
+      await dQuiz.save();
+      return res.status(201).send(dQuiz);
     } catch(err){
       res.status(500).send({
-        success: false,
-        message: err
+        message: "Error"
       })
     }
     };
@@ -108,8 +107,7 @@ async function getAllTechnicalQuestionsFunction(req,res,next) {
       });
   } catch(error){
     res.status(500).send({
-      success: false,
-      message: 'Failed'
+      message: "Error"
     })
   }
 }
@@ -120,7 +118,6 @@ async function getSpecificTechnicalQuestionFunction(req,res,next){
     const tSpecificQuestion = await tQuestion.findById(questionId)
     if(!tSpecificQuestion){
       res.status(400).send({
-        success: false,
         message: 'Question Id Wrong!'
       })
     } else{
@@ -128,12 +125,12 @@ async function getSpecificTechnicalQuestionFunction(req,res,next){
     }
   } catch(error){
     res.status(500).send({
-      success: false,
-      message: 'Failed'
+      message: "Error"
     })
   }
 }
-//GET REQUEST TO GET QUESTIONS OF A CERTAIN YEAR AND DIFFICULTY LEVEL
+
+/* //GET REQUEST TO GET QUESTIONS OF A CERTAIN YEAR AND DIFFICULTY LEVEL
 async function getSpecificYearAndDifficultyTechnicalQuestionFunction(req,res,next){
   try{
     const yearofstudy = req.params.yearofstudy
@@ -196,6 +193,7 @@ async function getSpecificYearAndDifficultyManagementQuestionFunction(req,res,ne
     })
   }
 }
+ */
 
 async function getSpecificManagementQuestionFunction(req,res,next){
   try{
@@ -203,7 +201,6 @@ async function getSpecificManagementQuestionFunction(req,res,next){
     const mSpecificQuestion = await mQuestion.findById(questionId)
     if(!mSpecificQuestion){
       res.status(400).send({
-        success: false,
         message: 'Question Id Wrong!'
       })
     } else{
@@ -211,8 +208,7 @@ async function getSpecificManagementQuestionFunction(req,res,next){
     }
   } catch(error){
     res.status(500).send({
-      success: false,
-      message: 'Failed'
+      message: "Error"
     })
   }
 }
@@ -223,7 +219,6 @@ async function getSpecificDesignQuestionFunction(req,res,next){
     const dSpecificQuestion = await dQuestion.findById(questionId)
     if(!dSpecificQuestion){
       res.status(400).send({
-        success: false,
         message: 'Question Id Wrong!'
       })
     } else{
@@ -232,8 +227,7 @@ async function getSpecificDesignQuestionFunction(req,res,next){
   } catch(error){
     console.log(error)
     res.status(500).send({
-      success: false,
-      message: 'Failed'
+      message: "Error"
     })
   }
 }
@@ -244,7 +238,6 @@ async function updateSpecificTQuestionFunction(req,res,next) {
   let questiontoBeUpdated = await tQuestion.findById(updateQuestion)
   if(!questiontoBeUpdated){
     res.status(400).send({
-      success: false,
       message: "Question to be Updated Not Found!"
     })
   } else {
@@ -258,15 +251,14 @@ async function updateSpecificTQuestionFunction(req,res,next) {
 
     questiontoBeUpdated.yearofstudy = req.body.yearofstudy;
 
-    questiontoBeUpdated.difficulty = req.body.difficulty;
+    //questiontoBeUpdated.difficulty = req.body.difficulty;
     
     await questiontoBeUpdated.save();
     res.status(200).send(questiontoBeUpdated)
   }
   } catch(error) {
     res.status(500).send({
-      success: false,
-      message: 'Failed'
+      message: "Error"
     })
   }
 }
@@ -277,7 +269,6 @@ async function updateSpecificMQuestionFunction(req,res,next) {
   let questiontoBeUpdated = await mQuestion.findById(updateQuestion)
   if(!questiontoBeUpdated){
     res.status(400).send({
-      success: false,
       message: "Question to be Updated Not Found!"
     })
   } else {
@@ -286,17 +277,16 @@ async function updateSpecificMQuestionFunction(req,res,next) {
 
     questiontoBeUpdated.image= req.body.image;
 
-    questiontoBeUpdated.yearofstudy = req.body.yearofstudy;
+    /* questiontoBeUpdated.yearofstudy = req.body.yearofstudy;
 
-    questiontoBeUpdated.difficulty = req.body.difficulty;
+    questiontoBeUpdated.difficulty = req.body.difficulty; */
     
     await questiontoBeUpdated.save();
     res.status(200).send(questiontoBeUpdated)
   }
   } catch(error) {
     res.status(500).send({
-      success: false,
-      message: 'Failed'
+      message: "Error"
     })
   }
 }
@@ -307,26 +297,27 @@ async function updateSpecificDQuestionFunction(req,res,next) {
   let questiontoBeUpdated = await dQuestion.findById(updateQuestion)
   if(!questiontoBeUpdated){
     res.status(400).send({
-      success: false,
       message: "Question to be Updated Not Found!"
     })
   } else {
-    questiontoBeUpdated.description = req.body.description;
+    questiontoBeUpdated.questionDescription = req.body.questionDescription;
 
+    questiontoBeUpdated.options = req.body.options;
 
-    questiontoBeUpdated.image= req.body.image;
-    
+    questiontoBeUpdated.correctOption= req.body.correctOption;
+
+    questiontoBeUpdated.questionImage= req.body.questionImage;
+
     questiontoBeUpdated.yearofstudy = req.body.yearofstudy;
 
-    questiontoBeUpdated.difficulty = req.body.difficulty;
-    
     await questiontoBeUpdated.save();
-    res.status(200).send(questiontoBeUpdated)
+    res.status(200).send({
+      questiontoBeUpdated
+    })
   }
   } catch(error) {
     res.status(500).send({
-      success: false,
-      message: 'Failed'
+      message: "Error"
     })
   }
 }
@@ -337,19 +328,16 @@ async function deleteSpecificTQuestionFunction(req,res,next) {
     let questionDelete = await tQuestion.findByIdAndDelete(deletedId)
     if(!questionDelete){
       res.status(400).send({
-        success: false,
         message: "Question does not Exist"
       })
     } else {
       res.status(200).send({
-        success: true,
         message: "Question Deleted Successfully!"
       })
     }
   } catch(error) {
     res.status(500).send({
-      success: false,
-      message: 'Failed'
+      message: "Error"
     })
   }
 }
@@ -360,19 +348,16 @@ async function deleteSpecificMQuestionFunction(req,res,next) {
     let questionDelete = await mQuestion.findByIdAndDelete(deletedId)
     if(!questionDelete){
       res.status(400).send({
-        success: false,
         message: "Question does not Exist"
       })
     } else {
       res.status(200).send({
-        success: true,
         message: "Question Deleted Successfully!"
       })
     }
   } catch(error) {
     res.status(500).send({
-      success: false,
-      message: 'Failed'
+      message: "Error"
     })
   }
 }
@@ -383,19 +368,16 @@ async function deleteSpecificDQuestionFunction(req,res,next) {
     let questionDelete = await dQuestion.findByIdAndDelete(deletedId)
     if(!questionDelete){
       res.status(400).send({
-        success: false,
         message: "Question does not Exist"
       })
     } else {
       res.status(200).send({
-        success: true,
         message: "Question Deleted Successfully!"
       })
     }
   } catch(error) {
     res.status(500).send({
-      success: false,
-      message: 'Failed'
+      message: "Error"
     })
   }
 }
@@ -404,52 +386,80 @@ async function deleteSpecificDQuestionFunction(req,res,next) {
 
 async function getRandomAllTechnicalQuestionsFunction(req,res,next) {
   try{
-    const tQuestions = await tQuestion.aggregate([{ $sample: { size: 10 } }]);
-    User.findByIdAndUpdate(req.user._id,{attemptedTechnical:true},function(err,updateduser){
+    //if the user's isAttempted has already been set to true then he cannot take the test again
+    const attemptedTestAlready = await User.findOne({_id: req.user._id, attemptedTechnical: true})
+    if(attemptedTestAlready){
+      return res.status(400).send({
+        message:"You have Already Taken this Test!"
+      })
+    } else {
+    const tQuestions = await tQuestion.aggregate([  
+      { $sample: {size: 10} }, 
+      { $match:  {"yearofstudy": Number(req.params.yearOfStudy)} },
+      {$project: {"correctOption":0}}
+    ])
+      console.log(tQuestions)
+    User.findOneAndUpdate({_id: req.user._id},{attemptedTechnical:true},function(err,updateduser){
       if(err)
       console.log(err)
       else
       console.log(updateduser)
     });
     res.status(200).send(tQuestions)
-  } catch(error){
+  } }
+  catch(error){
     res.status(500).send({
-      success: false,
-      message: 'Failed'
+      message: "Error"
     })
   }
 }
 
 async function getRandomAllManagementQuestionsFunction(req,res,next) {
   try{
-    const tQuestions = await mQuestion.aggregate([{ $sample: { size: 10 } }]);
+    const attemptedTestAlready = await User.findOne({_id: req.user._id, attemptedManagement: true})
+    if(attemptedTestAlready){
+      return res.status(400).send({
+        message:"You have Already Taken this Test!"
+      })
+    } else {
+    const mQuestions = await mQuestion.aggregate([{ $sample: { size: 10 } }]);
     User.findByIdAndUpdate(req.user._id,{attemptedManagement:true},function(err,updateduser){
       if(err)
       console.log(err)
       else
       console.log(updateduser)
     });
-    res.status(200).send(tQuestions)
-  } catch(error){
+    res.status(200).send(mQuestions)
+  } } 
+  catch(error){
     res.status(500).send({
-      success: false,
-      message: 'Failed'
+      message: "Error"
     })
   }
 }
 async function getRandomAllDesignQuestionsFunction(req,res,next) {
   try{
-    const tQuestions = await dQuestion.aggregate([{ $sample: { size: 10 } }]);
+    const attemptedTestAlready = await User.findOne({_id: req.user._id, attemptedDesign: true})
+    if(attemptedTestAlready){
+      return res.status(400).send({
+        message:"You have Already Taken this Test!"
+      })
+    } else {
+    const dQuestions = await dQuestion.aggregate([  
+      { $sample: {size: 10} }, 
+      /* { $match:  {"yearofstudy": Number(req.params.yearOfStudy)} }, */
+      {$project: {"correctOption":0}}
+    ]);
     User.findByIdAndUpdate(req.user._id,{attemptedDesign:true},function(err,updateduser){
       if(err)
       console.log(err)
       else
       console.log(updateduser)
     });
-    res.status(200).send(tQuestions)
-  } catch(error){
+    res.status(200).send(dQuestions)
+  } }
+  catch(error){
     res.status(500).send({
-      success: false,
       message: 'Failed'
     })
   }
@@ -475,9 +485,9 @@ module.exports ={
     getSpecificTechnicalQuestionFunction,
     getSpecificManagementQuestionFunction,
     getSpecificDesignQuestionFunction,
-    getSpecificYearAndDifficultyTechnicalQuestionFunction,
+    /* getSpecificYearAndDifficultyTechnicalQuestionFunction,
     getSpecificYearAndDifficultyDesignQuestionFunction,
-    getSpecificYearAndDifficultyManagementQuestionFunction,
+    getSpecificYearAndDifficultyManagementQuestionFunction, */
     updateSpecificTQuestionFunction,
     updateSpecificDQuestionFunction,
     updateSpecificMQuestionFunction,

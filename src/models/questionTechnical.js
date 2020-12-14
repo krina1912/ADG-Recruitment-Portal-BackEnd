@@ -8,26 +8,22 @@ const QuestionTechnicalSchema = mongoose.Schema(
   },
   options: 
     {
-      a: {
+      'a': {
         type: String,
         required: true
       },
-      b: {
+      'b': {
         type: String,
         required: true
       },
-      c: {
+      'c': {
         type: String,
         required: true
       },
-      d: {
+      'd': {
         type: String,
         required: true
       },
-      /*optionImage: {
-        type: String,
-        validate: /^data:image\/[^;]+;base64[^"]+$/
-      }*/
     }
   ,
   correctOption: {
