@@ -8,13 +8,13 @@ const getRandomAllTechnicalQuestions = require('../handlers/questions')
 
 
 //Management Questions
-router.get('/management/get-quiz-questions',checkAuth,getRandomAllManagementQuestions.getRandomAllManagementQuestionsFunction)
+router.get('/management/get-quiz-questions/:device',checkAuth,getRandomAllManagementQuestions.getRandomAllManagementQuestionsFunction)
 
 //Design Questions
-router.get('/design/get-quiz-questions',checkAuth,getRandomAllDesignQuestions.getRandomAllDesignQuestionsFunction)
+router.get('/design/get-quiz-questions/:device',checkAuth,getRandomAllDesignQuestions.getRandomAllDesignQuestionsFunction)
 
 //Technical Questions
-router.get('/technical/get-quiz-questions/:yearOfStudy',checkAuth,getRandomAllTechnicalQuestions.getRandomAllTechnicalQuestionsFunction)
+router.get('/technical/get-quiz-questions/:yearOfStudy/:device',checkAuth,getRandomAllTechnicalQuestions.getRandomAllTechnicalQuestionsFunction)
 
 
 module.exports = router

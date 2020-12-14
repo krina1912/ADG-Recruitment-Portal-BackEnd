@@ -393,11 +393,20 @@ async function getRandomAllTechnicalQuestionsFunction(req,res,next) {
         message:"You have Already Taken this Test!"
       })
     } else {
-    const tQuestions = await tQuestion.aggregate([  
-      { $sample: {size: 10} }, 
+      console.log(req.params.device);
+      if(req.params.device == "mobile"){
+        var tQuestions = await tQuestion.aggregate([  
+          { $match:  {"yearofstudy": Number(req.params.yearOfStudy)} },
+          { $sample: {size: 10} },
+          {$project: {"correctOption":0, "questionImage":0}}
+        ])
+      } else{
+    var tQuestions = await tQuestion.aggregate([  
       { $match:  {"yearofstudy": Number(req.params.yearOfStudy)} },
+      { $sample: {size: 10} },
       {$project: {"correctOption":0}}
     ])
+  }
       console.log(tQuestions)
     User.findOneAndUpdate({_id: req.user._id},{attemptedTechnical:true},function(err,updateduser){
       if(err)
@@ -422,7 +431,11 @@ async function getRandomAllManagementQuestionsFunction(req,res,next) {
         message:"You have Already Taken this Test!"
       })
     } else {
-    const mQuestions = await mQuestion.aggregate([{ $sample: { size: 10 } }]);
+      if(req.params.device == "mobile"){
+        var mQuestions = await mQuestion.aggregate([{ $sample: { size: 10 } },{$project: {"questionImage":0}}]);
+      } else{
+    var mQuestions = await mQuestion.aggregate([{ $sample: { size: 10 } }]);
+      }
     User.findByIdAndUpdate(req.user._id,{attemptedManagement:true},function(err,updateduser){
       if(err)
       console.log(err)
@@ -445,11 +458,19 @@ async function getRandomAllDesignQuestionsFunction(req,res,next) {
         message:"You have Already Taken this Test!"
       })
     } else {
-    const dQuestions = await dQuestion.aggregate([  
+      if(req.params.device == "mobile"){
+        var dQuestions = await dQuestion.aggregate([  
+          { $sample: {size: 10} }, 
+          /* { $match:  {"yearofstudy": Number(req.params.yearOfStudy)} }, */
+          {$project: {"correctOption":0, "questionImage":0}}
+        ]);
+      } else{
+    var dQuestions = await dQuestion.aggregate([  
       { $sample: {size: 10} }, 
       /* { $match:  {"yearofstudy": Number(req.params.yearOfStudy)} }, */
       {$project: {"correctOption":0}}
     ]);
+  }
     User.findByIdAndUpdate(req.user._id,{attemptedDesign:true},function(err,updateduser){
       if(err)
       console.log(err)
