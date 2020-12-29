@@ -13,6 +13,9 @@ async function submitManagementFunction(req,res,next){
     for(let i=0;i<responses.length;i++)
     {
     let questionVerify = await questionManagement.findById(responses[i].qid)
+    responses[i].question=questionVerify.description;
+ 
+
     if(!questionVerify){
       return res.status(400).send({
         message:"Question Credentials are wrong!"
@@ -223,8 +226,10 @@ async function getExcelSheetResponses(req,res,next){
       {header:'responseDesign',key:'responseDesign',width:20},
       {header:'githubLink',key:'githubLink',width:10},
       {header:'techscore',key:'techscore',width:10},
-      {header:'designscore',key:'designscore',width:10}
-
+      {header:'designscore',key:'designscore',width:10},
+      {header:'isSelectedTechnical',key:'isSelectedTechnical',width:10},
+      {header:'isSelectedDesign',key:'isSelectedDesign',width:10},
+      {header:'isSelectedManagement',key:'isSelectedManagement',width:10}
     ];
       //Assign a serial number for every user
       let userCount = 1;

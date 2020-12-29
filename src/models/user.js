@@ -5,12 +5,20 @@ const userSchema = mongoose.Schema(
   {
     name: {
       type: String,
-      required: true
+      required: true,
+      trim:true
     },
     regno: {
       type: String,
       required: true,
-      unique: true
+      unique: [true,"Registration Number Already Exists!"],
+      validate: [
+        function(v) {
+          var re = /^[12][09][A-Z][A-Z][A-Z]\d{4}$/;
+          return re.test(v)
+      },'Please enter a valid VIT Register Number',
+    ]
+
     },
     password: {
       type: String,
@@ -41,8 +49,10 @@ const userSchema = mongoose.Schema(
             var re = /^[6-9]\d{9}$/;
             return re.test(v)
         },
-          'Please enter a valid phone Number',
-        ]
+          'Please enter a valid Mobile Number',
+        ],
+        required:[true,"Phone Number is required!"],
+        unique:[true,"Phone Number already exists!"]
     },
     attemptedTechnical:
     {
@@ -73,7 +83,8 @@ const userSchema = mongoose.Schema(
   responseManagement:[
 {
   qid:String,
-  response:String
+  response:String,
+  question:String
 }
 ],
   
@@ -107,6 +118,24 @@ const userSchema = mongoose.Schema(
   isAdmin:{
      type:Boolean,
      default:false
+  },
+  isSelectedTechnical:{
+    type: Boolean,
+    default:false
+  },
+  isSelectedDesign:{
+    type: Boolean,
+    default:false
+  },
+  isSelectedManagement:{
+    type: Boolean,
+    default:false
+  },
+  resetToken:{
+    type:String
+  },
+  resetExpires:{
+    type:Date
   }
   },{timestamps: true}
 );

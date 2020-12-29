@@ -16,7 +16,7 @@ async function loginAdminFunction(req,res,next) {
   console.log(emailExists.password)
   if(!checkpassword){
     res.status(403).send({
-      message: "Password does not match!"
+      message: "The Email or Password is incorrect!"
     })
   }
   //create token and add it to the header file

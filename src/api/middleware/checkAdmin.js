@@ -10,17 +10,34 @@ module.exports = (req,res,next) => {
     })
   }
 
+
   try{
       const decoded = jwt.verify(token, process.env.JWT_KEY);
       req.user = decoded
+      console.log(decoded)
       userid=req.user._id
-       User.findById(userid,function(err,user){
-           if(!user.isAdmin)
-           res.status(403).send({
-            message:"Not an Admin!"
+      console.log(userid)
+
+
+      
+       User.findOne({_id:userid},function(err,user){
+         if(user===null){
+          res.status(403).send({
+            message:"User not found!"
           })
-          else
-          next();
+
+         }
+         else{
+           console.log(user);
+              if(!user.isAdmin)
+          res.status(403).send({
+           message:"Not an Admin!"
+         })
+         else
+         next();
+           
+         }
+        
        });
      
   }

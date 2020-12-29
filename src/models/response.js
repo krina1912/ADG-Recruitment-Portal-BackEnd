@@ -1,9 +1,7 @@
 const mongoose = require("mongoose");
  
 const responseSchema = new mongoose.Schema({
-    qid:String,
-    mcqAns:String,
-    subAns:String,
+   status:Boolean
 });
  
 module.exports = mongoose.model("Response", responseSchema);

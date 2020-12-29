@@ -1,7 +1,8 @@
 const jwt = require("jsonwebtoken")
+const user = require("../../models/user")
 require('dotenv/config')
 
-module.exports = (req,res,next) => {
+module.exports =async (req,res,next) => {
   const token = req.header("auth-token")
   if(!token){
     res.status(401).send({
@@ -13,7 +14,18 @@ module.exports = (req,res,next) => {
       const decoded = jwt.verify(token, process.env.JWT_KEY);
       req.user = decoded
       console.log(decoded)
-      next();
+      console.log(await user.findById(req.user._id))
+      if(await user.findById(req.user._id)!==null){
+        
+        next();
+      }
+      else
+      {
+        res.status(403).send({
+          message:"User not found!"
+        }) 
+      }
+      
   }
   catch(error){
     console.error(error)

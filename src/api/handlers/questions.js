@@ -2,6 +2,7 @@ const User = require('../../models/user')
 const mQuestion=require('../../models/questionManagement')
 const dQuestion=require('../../models/questionDesign');
 const tQuestion = require('../../models/questionTechnical')
+const Response =require('../../models/response')
 
 async function getAllManagementQuestionsFunction(req,res){
     console.log(req.user)
@@ -394,7 +395,7 @@ async function getRandomAllTechnicalQuestionsFunction(req,res,next) {
       })
     } else {
       console.log(req.params.device);
-      if(req.params.device == "mobile"){
+      if(req.params.device === "mobile"){
         var tQuestions = await tQuestion.aggregate([  
           { $match:  {"yearofstudy": Number(req.params.yearOfStudy)} },
           { $sample: {size: 10} },
@@ -406,7 +407,7 @@ async function getRandomAllTechnicalQuestionsFunction(req,res,next) {
       { $sample: {size: 10} },
       {$project: {"correctOption":0}}
     ])
-  }
+      }
       console.log(tQuestions)
     User.findOneAndUpdate({_id: req.user._id},{attemptedTechnical:true},function(err,updateduser){
       if(err)
@@ -415,7 +416,7 @@ async function getRandomAllTechnicalQuestionsFunction(req,res,next) {
       console.log(updateduser)
     });
     res.status(200).send(tQuestions)
-  } }
+   }}
   catch(error){
     res.status(500).send({
       message: "Error"
@@ -430,11 +431,12 @@ async function getRandomAllManagementQuestionsFunction(req,res,next) {
       return res.status(400).send({
         message:"You have Already Taken this Test!"
       })
-    } else {
-      if(req.params.device == "mobile"){
-        var mQuestions = await mQuestion.aggregate([{ $sample: { size: 10 } },{$project: {"questionImage":0}}]);
+    } 
+    else {
+      if(req.params.device === "mobile"){
+        var mQuestions = await mQuestion.aggregate([{ $sample: { size: 5 } },{$project: {"questionImage":0}}]);
       } else{
-    var mQuestions = await mQuestion.aggregate([{ $sample: { size: 10 } }]);
+    var mQuestions = await mQuestion.aggregate([{ $sample: { size: 5 } }]);
       }
     User.findByIdAndUpdate(req.user._id,{attemptedManagement:true},function(err,updateduser){
       if(err)
@@ -443,7 +445,7 @@ async function getRandomAllManagementQuestionsFunction(req,res,next) {
       console.log(updateduser)
     });
     res.status(200).send(mQuestions)
-  } } 
+    }}
   catch(error){
     res.status(500).send({
       message: "Error"
@@ -458,7 +460,7 @@ async function getRandomAllDesignQuestionsFunction(req,res,next) {
         message:"You have Already Taken this Test!"
       })
     } else {
-      if(req.params.device == "mobile"){
+      if(req.params.device === "mobile"){
         var dQuestions = await dQuestion.aggregate([  
           { $sample: {size: 10} }, 
           /* { $match:  {"yearofstudy": Number(req.params.yearOfStudy)} }, */
@@ -470,7 +472,7 @@ async function getRandomAllDesignQuestionsFunction(req,res,next) {
       /* { $match:  {"yearofstudy": Number(req.params.yearOfStudy)} }, */
       {$project: {"correctOption":0}}
     ]);
-  }
+      }
     User.findByIdAndUpdate(req.user._id,{attemptedDesign:true},function(err,updateduser){
       if(err)
       console.log(err)
@@ -478,7 +480,7 @@ async function getRandomAllDesignQuestionsFunction(req,res,next) {
       console.log(updateduser)
     });
     res.status(200).send(dQuestions)
-  } }
+    } }
   catch(error){
     res.status(500).send({
       message: 'Failed'
@@ -495,6 +497,539 @@ async function helloFunction(req,res,next){
     res.status(500).send({message:"error"});
   }
 }
+
+//recruitments status
+async function recruitmentsStatusFunction(req,res,next){
+  try{
+    Response.findById('5fe6fc973ecf810a52e90d5f',function(err,result){
+      if(err)
+      console.log(err)
+      else
+      res.status(200).send({status:result.status});
+    })
+   
+  
+    
+  }
+  catch(err){
+    console.log(err)
+    res.status(500).send({message:err})
+  }
+}
+
+async function  updateStatusFunction(req,res,next){
+  try{
+    Response.findByIdAndUpdate('5fe6fc973ecf810a52e90d5f',{status:req.query.recruitment},function(err,updated){
+      if(err)
+      console.log(err)
+      else
+      console.log(updated.status);
+
+    })
+    res.status(200).send({message:"updated status"});
+
+  }
+  catch{
+    res.status(500).send({message:"error"});
+  }
+}
+
+
+
+async function getUserDetailsAdmin(req,res,next) {
+  //to check with domain and year
+  //sort the response based on highest scores first
+  try{
+  if(req.query.domain == 'technical'){
+    var userDetails = await User.find({yearofstudy: req.query.year,attemptedTechnical:true}).sort({techscore: 'desc'}).select('name regno email techscore phone isSelectedTechnical')
+    if(userDetails){
+      res.status(200).send({
+        details: userDetails
+      })
+    } else{
+      res.status(400).send({
+        message: "No User Details Exist for Technical!"
+      })
+    }
+  } else if(req.query.domain == 'design'){
+    var userDetails = await User.find({yearofstudy: req.query.year,attemptedDesign:true}).sort({designscore: 'desc'}).select('name regno email designscore phone isSelectedDesign')
+    if(userDetails){
+      res.status(200).send({
+        details: userDetails
+      })
+    } else{
+      res.status(400).send({
+        message: "No User Details Exist for Technical!"
+      })
+    }
+  } else if(req.query.domain == 'management') {
+    var userDetails = await User.find({yearofstudy: req.query.year,attemptedManagement:true}).select('name regno email responseManagement phone isSelectedManagement')
+    if(userDetails){
+      res.status(200).send({
+        details: userDetails
+      })
+    } else{
+      res.status(400).send({
+        message: "No User Details Exist for Technical!"
+      })
+    }
+  } else {
+    return res.status(400).send({
+      message: "Incorrect Domain Entered!"
+    })
+  }
+} catch(err){
+  res.status(500).send({
+    message:"Error"
+  })
+}
+}
+
+async function getSpecificUserDetailsAdmin(req,res,next){
+  try{
+    const specificUserDetails = await User.findOne({ regno:req.query.regno}).select('name regno email techscore designscore responseManagement phone isSelectedManagement isSelectedDesign isSelectedTechnical')
+    if(specificUserDetails){
+      return res.status(200).send({
+        details: specificUserDetails
+      })
+    } else{
+      return res.status(400).send({
+        message:"Not able to find User"
+      })
+    }
+  }
+  catch{
+    return res.status(500).send({
+      message:"Error"
+    })
+  }
+}
+
+async function getResponsesOfUser(req,res,next){
+  try{
+    if(req.query.domain == 'technical'){
+      var userResponses = await User.findOne({regno:req.query.regno}).select("responseTech")
+      // console.log(userResponses.responseTech)
+      if(userResponses.responseTech){
+        async function getUserDetails(responseTech) {
+          // console.log(responseTech)
+        var responses =[];
+        var i=0;
+        
+        async function generateResponse(arr){
+
+          for(let i=0;i<arr.length;i++){
+            var data =  await tQuestion.findById(arr[i].qid)
+            // console.log(data);
+            var answer = await arr[i].response
+            responses.push({
+              "question":  await data.questionDescription,
+              "correctAnswer":  await data.options[data.correctOption],
+              "attemptedAnswer":  await data.options[answer]
+            })
+            // i++;
+            //  console.log(i);
+          console.log(responses)
+
+          }
+          return responses;
+
+        }
+        res=await generateResponse(responseTech);
+    
+    
+        return res;
+        
+        
+        }
+        
+        return res.status(200).send({
+          responses:await getUserDetails(userResponses.responseTech)
+        })
+
+    }else{
+        return res.status(400).send({
+          message:"User Not Found!"
+        })
+      }
+
+    } else if(req.query.domain == 'design'){
+       var userResponses = await User.findOne({regno:req.query.regno}).select("responseDesign")
+    // console.log(userResponses.responseTech)
+    if(userResponses.responseDesign){
+      async function getUserDetails(responseDesign) {
+       console.log(responseDesign)
+      var responses =[];
+      var i=0;
+      
+      async function generateResponse(arr){
+
+        for(let i=0;i<arr.length;i++){
+          var data =  await dQuestion.findById(arr[i].qid)
+          // console.log(data);
+          var answer = await arr[i].response
+          responses.push({
+            "question":  await data.questionDescription,
+            "correctAnswer":  await data.options[data.correctOption],
+            "attemptedAnswer":  await data.options[answer]
+          })
+          // i++;
+          //  console.log(i);
+        console.log(responses)
+
+        }
+        return responses;
+
+      }
+     return  await generateResponse(responseDesign);
+  
+  
+      
+      
+      }
+      
+      return res.status(200).send({
+        responses:await getUserDetails(userResponses.responseDesign)
+      })
+
+  }else{
+      return res.status(400).send({
+        message:"User Not Found!"
+      })
+    }
+    }else if(req.query.domain == 'management'){
+      var userResponses = (await User.findOne({regno:req.query.regno})).select("responseManagement")
+      if(userResponses){
+        return res.status(200).send({
+          userAnswers: userResponses
+        })
+      } else{
+        return res.status(400).send({
+          message:"User Not Found!"
+        })
+      }
+    }
+  }
+  catch(error){
+    return res.status(500).send(error)
+
+  }
+}
+async function acceptAUser(req,res,next){
+  try{
+    if(req.query.domain == 'technical'){
+      var userUpdate = await User.findOneAndUpdate({ regno: req.query.regno},{isSelectedTechnical:true})
+      console.log(userUpdate)
+      if(userUpdate){
+        return res.status(200).send({
+          message:"User has been Accepted into Technical Domain"
+        })
+      } else{
+        return res.status(400).send({
+          message:"User Cannot be Found!"
+        })
+      }
+    }else if(req.query.domain == 'design'){
+      var userUpdate = await User.findOneAndUpdate({ regno: req.query.regno},{isSelectedDesign:true})
+      console.log(userUpdate)
+      if(userUpdate){
+        return res.status(200).send({
+          message:"User has been Accepted into Design Domain"
+        })
+      } else{
+        return res.status(400).send({
+          message:"User Cannot be Found!"
+        })
+      }
+    } else if(req.query.domain == 'management'){
+      var userUpdate = await User.findOneAndUpdate({ regno: req.query.regno},{isSelectedManagement:true})
+      console.log(userUpdate)
+      if(userUpdate){
+        return res.status(200).send({
+          message:"User has been Accepted into Management Domain"
+        })
+      } else{
+        return res.status(400).send({
+          message:"User Cannot be Found!"
+        })
+      }
+    }else {
+      return res.status(400).send({
+        message: "Incorrect Domain Entered!"
+      })
+    }
+  }
+  catch{
+    return res.status(500).send({
+      message:"Error"
+    })
+  }
+}
+
+ async function rejectUser(req,res,next){
+  try{
+    if(req.query.domain == 'technical'){
+      var userUpdate2 = await User.findOneAndUpdate({regno: req.query.regno},{isSelectedTechnical:false})
+      if(userUpdate2){
+        return res.status(200).send({
+          message:"User has been Rejected into Technical Domain"
+        })
+      } else{
+        return res.status(400).send({
+          message:"User Cannot be Found!"
+        })
+      }
+    }else if(req.query.domain == 'design'){
+      var userUpdate2 = await User.findOneAndUpdate({regno: req.query.regno},{isSelectedDesign:false})
+      if(userUpdate2){
+        return res.status(200).send({
+          message:"User has been Rejected into Design Domain"
+        })
+      } else{
+        return res.status(400).send({
+          message:"User Cannot be Found!"
+        })
+      }
+    } else{
+      var userUpdate2 = await User.findOneAndUpdate({regno: req.query.regno},{isSelectedManagement:false})
+      if(userUpdate2){
+        return res.status(200).send({
+          message:"User has been Rejected into Management Domain"
+        })
+      } else{
+        return res.status(400).send({
+          message:"User Cannot be Found!"
+        })
+      }
+    }
+  }
+  catch{
+    return res.status(500).send({
+      message: "Error!"
+    })
+  }
+}
+
+
+//Display all the Selected or Rejected Candidates of a particular domain
+
+async function getSelectedOrRejected(req,res,next){
+  try{
+    if(req.query.choice == 'selected'){
+      if(req.query.domain == 'technical'){
+        var selectedDetails = await User.find({isSelectedTechnical:true}).sort({techscore: 'desc'}).select('name regno email phone')
+        console.log(selectedDetails)
+        if(selectedDetails){
+          return res.status(200).send({
+            details: selectedDetails
+          })
+        }
+      } else if(req.query.domain == 'design'){
+        var selectedDetails = await User.find({isSelectedDesign:true}).sort({designscore: 'desc'}).select('name regno email phone')
+        console.log(selectedDetails)
+        if(selectedDetails){
+          return res.status(200).send({
+            details: selectedDetails
+          })
+        }
+      } else if(req.query.domain == 'management'){
+        var selectedDetails = await User.find({isSelectedManagement:true}).select('name regno email phone')
+        console.log(selectedDetails)
+        if(selectedDetails){
+          return res.status(200).send({
+            details: selectedDetails
+          })
+        }
+      } else {
+        return res.status(400).send({
+          message: "Incorrect Domain Entered!"
+        })
+      }
+    }else if(req.query.choice == 'rejected'){
+      if(req.query.domain == 'technical'){
+        var selectedDetails = await User.find({isSelectedTechnical:false}).sort({techscore: 'desc'}).select('name regno email phone')
+        console.log(selectedDetails)
+        if(selectedDetails){
+          return res.status(200).send({
+            details: selectedDetails
+          })
+        }
+      } else if(req.query.domain == 'design'){
+        var selectedDetails = await User.find({isSelectedDesign:false}).sort({designscore: 'desc'}).select('name regno email phone')
+        console.log(selectedDetails)
+        if(selectedDetails){
+          return res.status(200).send({
+            details: selectedDetails
+          })
+        } 
+      } else if(req.query.domain == 'management'){
+        var selectedDetails = await User.find({isSelectedManagement:false}).select('name regno email phone')
+        console.log(selectedDetails)
+        if(selectedDetails){
+          return res.status(200).send({
+            details: selectedDetails
+          })
+        }
+      } else {
+        return res.status(400).send({
+          message: "Incorrect Domain Entered!"
+        })
+      }
+    }
+  }
+  catch{
+    return res.status(500).send({
+      message:"Error"
+    })
+  }
+}
+
+
+async function resetAttempt(req,res,next){
+  try{
+  //check domain and regno(to find user)
+  //update the isAttempted and the responses of that particular domain
+  if(req.query.domain == "technical"){
+    await User.findOneAndUpdate({regno:req.query.regno},{attemptedTechnical:false , responseTech:[]},(err,result)=> {
+      if(err){
+        return res.status(400).send({
+          message: err.message
+        })
+      } else {
+        return res.status(200).send({
+          message:"Tech Attempt for the User has been reset!"
+        })
+      }
+    })
+  } else if(req.query.domain == "design"){
+    await User.findOneAndUpdate({regno:req.query.regno},{attemptedDesign:false , responseDesign:[]},(err,result)=> {
+      if(err){
+        return res.status(400).send({
+          message: err.message
+        })
+      } else {
+        return res.status(200).send({
+          message:"Design Attempt for the User has been reset!"
+        })
+      }
+    })
+  }else if(req.query.domain == "management") {
+    await User.findOneAndUpdate({regno:req.query.regno},{attemptedManagement:false , responseManagement:[]},(err,result)=> {
+      if(err){
+        return res.status(400).send({
+          message: err.message
+        })
+      } else {
+        return res.status(200).send({
+          message:"Management Attempt for the User has been reset!"
+        })
+      }
+    })
+  } else {
+    return res.status(400).send({
+      message: "Incorrect Domain Entered!"
+    })
+  }
+}catch(err){
+  res.status(500).send({
+    message:"Error"
+  })
+}}
+
+async function yearwiseSelectedRejected(req,res,next){
+  try{
+    if(req.query.choice == 'selected'){
+      if(req.query.domain == 'technical'){
+        var selectedDetails = await User.find({isSelectedTechnical:true,yearofstudy:req.query.year}).sort({techscore: 'desc'}).select('-password -isEmailVerified -attemptedTechnical -attemptedManagement -attemptedDesign -isAdmin -resetToken -resetExpires')
+        console.log(selectedDetails)
+        if(selectedDetails){
+          return res.status(200).send({
+            details: selectedDetails
+          })
+        }
+      } else if(req.query.domain == 'design'){
+        var selectedDetails = await User.find({isSelectedDesign:true,yearofstudy:req.query.year}).sort({designscore: 'desc'}).select('-password -isEmailVerified -attemptedTechnical -attemptedManagement -attemptedDesign -isAdmin -resetToken -resetExpires')
+        console.log(selectedDetails)
+        if(selectedDetails){
+          return res.status(200).send({
+            details: selectedDetails
+          })
+        }
+      } else if(req.query.domain == 'management'){
+        var selectedDetails = await User.find({isSelectedManagement:true,yearofstudy:req.query.year}).select('-password -isEmailVerified -attemptedTechnical -attemptedManagement -attemptedDesign -isAdmin -resetToken -resetExpires')
+        console.log(selectedDetails)
+        if(selectedDetails){
+          return res.status(200).send({
+            details: selectedDetails
+          })
+        }
+      } else {
+        return res.status(400).send({
+          message: "Incorrect Domain Entered!"
+        })
+      }
+    }else if(req.query.choice == 'rejected'){
+      if(req.query.domain == 'technical'){
+        var selectedDetails = await User.find({isSelectedTechnical:false,yearofstudy:req.query.year}).sort({techscore: 'desc'}).select('-password -isEmailVerified -attemptedTechnical -attemptedManagement -attemptedDesign -isAdmin -resetToken -resetExpires')
+        console.log(selectedDetails)
+        if(selectedDetails){
+          return res.status(200).send({
+            details: selectedDetails
+          })
+        }
+      } else if(req.query.domain == 'design'){
+        var selectedDetails = await User.find({isSelectedDesign:false,yearofstudy:req.query.year}).sort({designscore: 'desc'}).select('-password -isEmailVerified -attemptedTechnical -attemptedManagement -attemptedDesign -isAdmin -resetToken -resetExpires')
+        console.log(selectedDetails)
+        if(selectedDetails){
+          return res.status(200).send({
+            details: selectedDetails
+          })
+        } 
+      } else if(req.query.domain == 'management'){
+        var selectedDetails = await User.find({isSelectedManagement:false,yearofstudy:req.query.year}).select('-password -isEmailVerified -attemptedTechnical -attemptedManagement -attemptedDesign -isAdmin -resetToken -resetExpires')
+        console.log(selectedDetails)
+        if(selectedDetails){
+          return res.status(200).send({
+            details: selectedDetails
+          })
+        }
+      } else {
+        return res.status(400).send({
+          message: "Incorrect Domain Entered!"
+        })
+      }
+    }
+  }
+  catch{
+    return res.status(500).send({
+      message:"Error"
+    })
+  }
+}
+
+// async function  getResponseFunction(req,res,next){
+//   try{
+//     var responses=[];
+//     if(req.query.domain === 'technical'){
+//       var res=await User.findOne({regno:req.query.regno}).select('responseTech')
+//       .then()
+//       {
+//         res.forEach(x => {
+
+
+          
+//         });
+        
+//       }
+      
+        
+      
+
+//     }
+
+//   }
+
+// }
 
 module.exports ={
     getAllDesignQuestionsFunction,
@@ -518,7 +1053,17 @@ module.exports ={
     getRandomAllTechnicalQuestionsFunction,
     getRandomAllManagementQuestionsFunction,
     getRandomAllDesignQuestionsFunction,
-    helloFunction
+    helloFunction,
+    recruitmentsStatusFunction,
+    updateStatusFunction,
+    getUserDetailsAdmin,
+    getSpecificUserDetailsAdmin,
+    acceptAUser,
+    rejectUser,
+    getSelectedOrRejected,
+    resetAttempt,
+    yearwiseSelectedRejected,
+    getResponsesOfUser
   }
 
 

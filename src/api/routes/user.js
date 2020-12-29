@@ -9,6 +9,7 @@ const updateUser = require('../handlers/auth')
 const emailVerify = require('../handlers/auth')
 const submit= require('../handlers/submission.js')
 const cronjob=require('../handlers/questions.js')
+const checkstatus=require('../handlers/questions.js')
 // const logout = require();
 
 //signup
@@ -20,8 +21,12 @@ router.post('/login',login.loginFunction)
 //get the user
 router.get('/getuser',checkAuth,getUser.getUserFunction)
 
+
 //edit the user profile
 router.put('/updateuser',checkAuth,updateUser.updateUserFunction)
+router.post('/resetpassword',updateUser.passwordReset);
+router.put('/updatepassword',updateUser.updatePassword);
+router.post('/resendverification',signup.resendverification);
 
 //email verification
 router.get('/get-verified/:userId',emailVerify.verifyEmail )
@@ -34,6 +39,8 @@ router.post('/technical2/submit',checkAuth,submit.submitTech2Function);
 
 //CRON-JOB
 router.get('/hello',cronjob.helloFunction);
+router.get('/recruitmentstatus',checkstatus.recruitmentsStatusFunction);
+
 
 
 module.exports = router

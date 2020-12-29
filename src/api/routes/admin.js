@@ -21,6 +21,13 @@ const getYearDifficultyTQuestion = require('../handlers/questions')
 const getYearDifficultyMQuestion = require('../handlers/questions')
 const getYearDifficultyDQuestion = require('../handlers/questions')
 const getExcelSheetResponses = require('../handlers/submission')
+const checkstatus= require('../handlers/questions')
+const getUserDetails = require('../handlers/questions')
+const getSpecificUser = require('../handlers/questions')
+const acceptAUser = require('../handlers/questions')
+const rejectUser = require('../handlers/questions')
+const getSelectedOrRejected = require('../handlers/questions')
+const resetUser = require('../handlers/questions')
 
 const login = require('../handlers/admin-auth.js')
 
@@ -53,7 +60,38 @@ router.delete('/technical/delete-question/:questionId',checkAdmin,deleteSpecific
 /* router.get('/technical/get-specific-questions/:yearofstudy/:difficultyLevel',checkAdmin,getYearDifficultyTQuestion.getAllTechnicalQuestionsFunction) */
 
 
+//update recruitment status
+router.get('/statusupdate',checkAdmin,checkstatus.updateStatusFunction);
+
 //Get User Data in excel Sheet
 router.get('/getData',checkAdmin,getExcelSheetResponses.getExcelSheetResponses)
+
+//Get Data of all Students who attempted a particular domain
+router.get('/getalldetailsuser',checkAdmin,getUserDetails.getUserDetailsAdmin)
+
+//Get Data of a Specific Student
+router.get('/getspecificuser',checkAdmin, getSpecificUser.getSpecificUserDetailsAdmin)
+router.get('/getuserdata', getSpecificUser.getSpecificUserDetailsAdmin)
+
+//accept a user
+router.post('/acceptuser',checkAdmin,acceptAUser.acceptAUser);
+
+//reject a user
+router.post('/rejectuser',checkAdmin,rejectUser.rejectUser)
+ 
+
+//Get Selected or Rejected People
+router.get('/getresults',checkAdmin,getSelectedOrRejected.getSelectedOrRejected);
+
+//Modify isAttempted and Responses of User
+router.get('/resetattempt',checkAdmin,resetUser.resetAttempt)
+
+//yearwise selected rejected
+router.get('/results',checkAdmin,resetUser.yearwiseSelectedRejected)
+
+//get Specific Users Responses for three domains
+
+router.get('/getuseranswers',checkAdmin,getSpecificUser.getResponsesOfUser)
+
 
 module.exports = router
