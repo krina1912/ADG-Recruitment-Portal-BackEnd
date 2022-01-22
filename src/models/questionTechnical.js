@@ -33,15 +33,15 @@ const QuestionTechnicalSchema = mongoose.Schema(
     type:String,
     validate: /^data:image\/[^;]+;base64[^"]+$/
   },
-  yearofstudy: {
-    type: Number,
-    required: [true, 'Please Specify which Year the questions are made for!']
-  }
-  // difficulty: {
-  //   type: String,
-  //   enum:['Easy','Hard','Medium'],
-  //   required: [true,'Please Provide a Difficulty Level Amongst the Given Options']
+  // yearofstudy: {
+  //   type: Number,
+  //   required: [true, 'Please Specify which Year the questions are made for!']
   // }
+  difficulty: {
+    type: String,
+    enum:['Easy','Hard','Medium'],
+    required: [true,'Please Provide a Difficulty Level Amongst the Given Options']
+  }
   }
 )
 

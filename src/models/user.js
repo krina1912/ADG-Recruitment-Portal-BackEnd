@@ -102,6 +102,10 @@ const userSchema = mongoose.Schema(
         'Please enter a valid GitHub Link',
       ],
     },
+    bio:{
+      type: String,
+
+    },
     /*userImage: {
       type: String,
       required: true,
@@ -114,6 +118,10 @@ const userSchema = mongoose.Schema(
   designscore:{
     type:Number,
     default:0
+  },
+  managementscore:{
+    type:Number,
+    default: 0
   },
   isAdmin:{
      type:Boolean,

@@ -397,14 +397,34 @@ async function getRandomAllTechnicalQuestionsFunction(req,res,next) {
       console.log(req.params.device);
       if(req.params.device === "mobile"){
         var tQuestions = await tQuestion.aggregate([  
-          { $match:  {"yearofstudy": Number(req.params.yearOfStudy)} },
-          { $sample: {size: 10} },
+          { $match:  {"difficulty": "medium"} },
+          { $sample: {size: 4} },
+          {$project: {"correctOption":0, "questionImage":0}}
+        ])
+        var tQuestions = await tQuestion.aggregate([  
+          { $match:  {"difficulty": "easy"} },
+          { $sample: {size: 3} },
+          {$project: {"correctOption":0, "questionImage":0}}
+        ])
+        var tQuestions = await tQuestion.aggregate([  
+          { $match:  {"difficulty": "hard"} },
+          { $sample: {size: 3} },
           {$project: {"correctOption":0, "questionImage":0}}
         ])
       } else{
     var tQuestions = await tQuestion.aggregate([  
-      { $match:  {"yearofstudy": Number(req.params.yearOfStudy)} },
-      { $sample: {size: 10} },
+      { $match:  {"difficulty": "medium"} },
+      { $sample: {size: 4} },
+      {$project: {"correctOption":0}}
+    ])
+    var tQuestions = await tQuestion.aggregate([  
+      { $match:  {"difficulty": "easy"} },
+      { $sample: {size: 3} },
+      {$project: {"correctOption":0}}
+    ])
+    var tQuestions = await tQuestion.aggregate([  
+      { $match:  {"difficulty": "hard"} },
+      { $sample: {size: 3} },
       {$project: {"correctOption":0}}
     ])
       }
@@ -434,9 +454,38 @@ async function getRandomAllManagementQuestionsFunction(req,res,next) {
     } 
     else {
       if(req.params.device === "mobile"){
-        var mQuestions = await mQuestion.aggregate([{ $sample: { size: 5 } },{$project: {"questionImage":0}}]);
+        var mQuestions = await mQuestion.aggregate([
+          { $match:  {"difficulty": "medium"} },
+          { $sample: {size: 4} },
+          // { $sample: { size: 5 } },
+          {$project: {"questionImage":0}}]);
+          var mQuestions = await mQuestion.aggregate([
+            { $match:  {"difficulty": "easy"} },
+            { $sample: {size: 3} },
+            // { $sample: { size: 5 } },
+            {$project: {"questionImage":0}}]);
+            var mQuestions = await mQuestion.aggregate([
+              { $match:  {"difficulty": "hard"} },
+              { $sample: {size: 3} },
+              // { $sample: { size: 5 } },
+              {$project: {"questionImage":0}}]);
       } else{
-    var mQuestions = await mQuestion.aggregate([{ $sample: { size: 5 } }]);
+        var mQuestions = await mQuestion.aggregate([
+          { $match:  {"difficulty": "medium"} },
+          { $sample: {size: 4} },
+          // { $sample: { size: 5 } },
+          ]);
+          var mQuestions = await mQuestion.aggregate([
+            { $match:  {"difficulty": "easy"} },
+            { $sample: {size: 3} },
+            // { $sample: { size: 5 } },
+            ]);
+            var mQuestions = await mQuestion.aggregate([
+              { $match:  {"difficulty": "hard"} },
+              { $sample: {size: 3} },
+              // { $sample: { size: 5 } },
+              ]);
+   
       }
     User.findByIdAndUpdate(req.user._id,{attemptedManagement:true},function(err,updateduser){
       if(err)
@@ -462,16 +511,49 @@ async function getRandomAllDesignQuestionsFunction(req,res,next) {
     } else {
       if(req.params.device === "mobile"){
         var dQuestions = await dQuestion.aggregate([  
-          { $sample: {size: 10} }, 
+          { $sample: {size: 3} }, 
+          { $match:  {"difficulty": "easy"} },
+
           /* { $match:  {"yearofstudy": Number(req.params.yearOfStudy)} }, */
           {$project: {"correctOption":0, "questionImage":0}}
         ]);
+        var dQuestions = await dQuestion.aggregate([  
+          { $sample: {size: 3} }, 
+          { $match:  {"difficulty": "hard"} },
+
+          /* { $match:  {"yearofstudy": Number(req.params.yearOfStudy)} }, */
+          {$project: {"correctOption":0, "questionImage":0}}
+        ]);
+        var dQuestions = await dQuestion.aggregate([  
+          { $sample: {size: 4} }, 
+          { $match:  {"difficulty": "medium"} },
+
+          /* { $match:  {"yearofstudy": Number(req.params.yearOfStudy)} }, */
+          {$project: {"correctOption":0}}
+        ]);
       } else{
-    var dQuestions = await dQuestion.aggregate([  
-      { $sample: {size: 10} }, 
-      /* { $match:  {"yearofstudy": Number(req.params.yearOfStudy)} }, */
-      {$project: {"correctOption":0}}
-    ]);
+        var dQuestions = await dQuestion.aggregate([  
+          { $sample: {size: 3} }, 
+          { $match:  {"difficulty": "easy"} },
+
+          /* { $match:  {"yearofstudy": Number(req.params.yearOfStudy)} }, */
+          {$project: {"correctOption":0}}
+        ]);
+        var dQuestions = await dQuestion.aggregate([  
+          { $sample: {size: 3} }, 
+          { $match:  {"difficulty": "hard"} },
+
+          /* { $match:  {"yearofstudy": Number(req.params.yearOfStudy)} }, */
+          {$project: {"correctOption":0}}
+        ]);
+        var dQuestions = await dQuestion.aggregate([  
+          { $sample: {size: 4} }, 
+          { $match:  {"difficulty": "medium"} },
+
+          /* { $match:  {"yearofstudy": Number(req.params.yearOfStudy)} }, */
+          {$project: {"correctOption":0}}
+        ]);
+   
       }
     User.findByIdAndUpdate(req.user._id,{attemptedDesign:true},function(err,updateduser){
       if(err)
